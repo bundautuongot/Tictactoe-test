@@ -1,17 +1,19 @@
 import copy
+import sys
+
 import pygame
 
 class Game:
-    SCREEN_WIDTH = SCREEN_HEIGHT = 1500
+    SCREEN_WIDTH = SCREEN_HEIGHT = 600
     SIZE = 3
     BACKGROUND_COLOR = (255, 255, 255)
     GRID_COLOR = (0, 0, 0)
     X_COLOR = (0, 255, 0)
     O_COLOR = (255, 0, 0)
     CHARACTERS = 3
-    LINE_WIDTH = 5
+    LINE_WIDTH = 3
     MARKERS_WIDTH = 10
-    MAX_DEPTH = 11
+    MAX_DEPTH = 21
     player = 1
     run = True
     click = False
@@ -85,6 +87,7 @@ class Game:
                         int(cell_y // (self.SCREEN_WIDTH / self.SIZE))] == 0:
                         self.markers[int(cell_x // (self.SCREEN_WIDTH / self.SIZE))][
                             int(cell_y // (self.SCREEN_WIDTH / self.SIZE))] = self.player
+                        print(self.markers)
                         self.player *= -1
                         self.countMoves += 1
 
@@ -100,6 +103,39 @@ class Game:
         return availableMoves
 
     def isEndGame(self, board):
+        if self.SIZE == 3:
+            if (board[0][0] == board[0][1] and board[0][1] == board[0][2] and board[0][0] != '0'):
+                return board[0][0]
+            if (board[1][0] == board[1][1] and board[1][1] == board[1][2] and board[1][0] != '0'):
+                return board[1][0]
+            if (board[2][0] == board[2][1] and board[2][1] == board[2][2] and board[2][0] != '0'):
+                return board[2][0]
+
+                # Check verticals
+            if (board[0][0] == board[1][0] and board[1][0] == board[2][0] and board[0][0] != '0'):
+                return board[0][0]
+            if (board[0][1] == board[1][1] and board[1][1] == board[2][1] and board[0][1] != '0'):
+                return board[0][1]
+            if (board[0][2] == board[1][2] and board[1][2] == board[2][2] and board[0][2] != '0'):
+                return board[0][2]
+
+                # Check diagonals
+            if (board[0][0] == board[1][1] and board[1][1] == board[2][2] and board[0][0] != '0'):
+                return board[1][1]
+            if (board[2][0] == board[1][1] and board[1][1] == board[0][2] and board[2][0] != '0'):
+                return board[1][1]
+
+                # Check if draw
+            draw_flag = 0
+            for i in range(3):
+                for j in range(3):
+                    if board[i][j] == '0':
+                        draw_flag = 1
+            if draw_flag == 0:
+                return None
+
+            return None
+
         for y in range(self.SIZE):
             for x in range(self.SIZE - self.CHARACTERS + 1):
                 if sum(board[y][x:x + self.CHARACTERS]) == self.CHARACTERS:
@@ -137,13 +173,13 @@ class Game:
 
     def minimax(self, board, alpha, beta, depth, maximizingPlayer):
         state = self.isEndGame(board)
-        if depth == 0:
-            return 10
-        if state == 'X':
+        if state == 1:
             return 500
-        if state == 'O':
+        if state == -1:
             return -500
         if self.isFull(board):
+            return 0
+        if depth == 0:
             return 0
         availableMoves = self.getAllAvailableMove(board)
         if maximizingPlayer:
@@ -154,7 +190,7 @@ class Game:
                 val = self.minimax(new_board, alpha, beta, depth - 1, False)
                 alpha = max(alpha, val)
                 maxVal = max(maxVal, val)
-                if beta < alpha:
+                if alpha >= beta:
                     break
             return maxVal
         else:
@@ -165,10 +201,9 @@ class Game:
                 val = self.minimax(new_board, alpha, beta, depth - 1, True)
                 if val <= minVal and depth == self.MAX_DEPTH:
                     self.best_move = (row, col)
-                print(val)
                 beta = min(beta, val)
                 minVal = min(minVal, val)
-                if alpha > beta:
+                if alpha >= beta:
                     break
             return minVal
 
@@ -178,3 +213,10 @@ class Game:
         self.markers[row][col] = -1
         self.player *= -1
         self.countMoves += 1
+
+    def waitUntilKeyPress(self):
+        while(True):
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    pygame.quit()
+                    sys.exit()

@@ -1,20 +1,31 @@
-def isEndGame(self, board):
-    for x in range(2, self.SIZE - 2):
-        for y in range(2, self.SIZE - 2):
-            if board[x][y] != 0:
-                if board[x][y] == board[x][y - 1] == board[x][y + 1] == board[x][y + 2] == board[x][y - 2]:
-                    return board[x][y]
-                elif (board[x][y] == board[x - 1][y] == board[x + 1][y]
-                      == board[x + 2][y] == board[x - 2][y]):
-                    return board[x][y]
-                elif (board[x][y] == board[x + 1][y + 1] == board[x - 1][y - 1]
-                      == board[x + 2][y + 2] == board[x - 2][y - 2]):
-                    return board[x][y]
-                elif (board[x][y] == board[x - 1][y + 1] == board[x - 1][y + 1]
-                      == board[x - 2][y + 2] == board[x - 2][y + 2]):
-                    return board[x][y]
-    for x in range(self.SIZE):
-        for y in range(self.SIZE):
-            if (board[x][y]) == 0:
-                return 2
-    return 0
+if (board[0][0] == board[0][1] and board[0][1] == board[0][2] and board[0][0] != '0'):
+    return board[0][0]
+if (board[1][0] == board[1][1] and board[1][1] == board[1][2] and board[1][0] != '0'):
+    return board[1][0]
+if (board[2][0] == board[2][1] and board[2][1] == board[2][2] and board[2][0] != '0'):
+    return board[2][0]
+
+    # Check verticals
+if (board[0][0] == board[1][0] and board[1][0] == board[2][0] and board[0][0] != '0'):
+    return board[0][0]
+if (board[0][1] == board[1][1] and board[1][1] == board[2][1] and board[0][1] != '0'):
+    return board[0][1]
+if (board[0][2] == board[1][2] and board[1][2] == board[2][2] and board[0][2] != '0'):
+    return board[0][2]
+
+    # Check diagonals
+if (board[0][0] == board[1][1] and board[1][1] == board[2][2] and board[0][0] != '0'):
+    return board[1][1]
+if (board[2][0] == board[1][1] and board[1][1] == board[0][2] and board[2][0] != '0'):
+    return board[1][1]
+
+    # Check if draw
+draw_flag = 0
+for i in range(3):
+    for j in range(3):
+        if board[i][j] == '0':
+            draw_flag = 1
+if draw_flag == 0:
+    return None
+
+return None
